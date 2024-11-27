@@ -8,7 +8,7 @@ test-job1:
   script:
     - echo "This job tests something"
 
-test-job2:
+test-job3:
   stage: test
   script:
     - echo "This job tests something, but takes more time than test-job1."
