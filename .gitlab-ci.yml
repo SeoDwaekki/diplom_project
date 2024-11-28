@@ -27,6 +27,7 @@ test-job3:
 deploy-prod:
   stage: deploy
   image: bitnami/kubectl:latest
+  entrypoint: [""]
   script:
     - echo "Deploying to Kubernetes..."
     - echo $KUBECONFIG
