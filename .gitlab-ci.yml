@@ -38,6 +38,6 @@ deploy-prod:
     - echo "Deploying to Kubernetes..."
     - echo $KUBECONFIG
     - export KUBECONFIG=$KUBECONFIG
-    - kubectl apply -f k8s/
+    - kubectl -n diplom apply -f k8s/
   environment: production
   when: manual
