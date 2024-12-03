@@ -30,14 +30,14 @@ trivy_scan:
     TRIVY_CACHE_DIR: ".trivycache/"
 #    FULL_IMAGE_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
   script:
+    - trivy --version
     - echo trivy --version
     # cache cleanup is needed when scanning images with the same tags, it does not remove the database
     - time trivy clean --scan-cache
     # update vulnerabilities db
     - time trivy image --download-db-only
     # Builds report and puts it in the default workdir $CI_PROJECT_DIR, so `artifacts:` can take it from there
-    - time trivy image --exit-code 0 --format table 
-        --output "$CI_PROJECT_DIR/gl-container-scanning-report.json" "$CI_REGISTRY_IMAGE"
+    - time trivy image --exit-code 0 --format table "$CI_REGISTRY_IMAGE"
     # Prints full report
     - time trivy image --exit-code 0 "$CI_REGISTRY_IMAGE"
     # Fail on critical vulnerabilities
