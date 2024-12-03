@@ -1,6 +1,6 @@
 stages:
   - build
-  - test
+  - scan
   - deploy
 
 build-job:
@@ -14,19 +14,42 @@ build-job:
     - docker push "$CI_REGISTRY_IMAGE"
   when: manual
 
-test-job1:
-  stage: test
+trivy_scan:
+  stage: scan
+  image:
+    name: docker.io/aquasec/trivy:latest
+    entrypoint: [""]
+  variables:
+    # No need to clone the repo, we exclusively work on artifacts.  See
+    # https://docs.gitlab.com/ee/ci/runners/README.html#git-strategy
+    GIT_STRATEGY: none
+    TRIVY_USERNAME: "$CI_REGISTRY_USER"
+    TRIVY_PASSWORD: "$CI_REGISTRY_PASSWORD"
+    TRIVY_AUTH_URL: "$CI_REGISTRY"
+    TRIVY_NO_PROGRESS: "true"
+#    FULL_IMAGE_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
   script:
-    - echo "This job tests something"
-  when: manual
-
-test-job3:
-  stage: test
-  script:
-    - echo "This job tests something, but takes more time than test-job1."
-    - echo "After the echo commands complete, it runs the sleep command for 20 seconds"
-    - echo "which simulates a test that runs 20 seconds longer than test-job1"
-    - sleep 20
+    - trivy --version
+    # cache cleanup is needed when scanning images with the same tags, it does not remove the database
+    - time trivy image --clear-cache
+    # update vulnerabilities db
+    - time trivy image --download-db-only
+    # Builds report and puts it in the default workdir $CI_PROJECT_DIR, so `artifacts:` can take it from there
+    - time trivy image --exit-code 0 --format table 
+        --output "$CI_PROJECT_DIR/gl-container-scanning-report.json" "$CI_REGISTRY_IMAGE"
+    # Prints full report
+    - time trivy image --exit-code 0 "$CI_REGISTRY_IMAGE"
+    # Fail on critical vulnerabilities
+    - time trivy image --exit-code 1 --severity CRITICAL "$CI_REGISTRY_IMAGE"
+#  cache:
+#    paths:
+#      - .trivycache/
+  artifacts:
+    when:                          always
+    reports:
+      container_scanning:          gl-container-scanning-report.json
+  tags:
+    - docker-runner
   when: manual
 
 deploy-prod:
