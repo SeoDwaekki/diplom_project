@@ -29,6 +29,9 @@ trivy_scan:
     TRIVY_NO_PROGRESS: "true"
     TRIVY_CACHE_DIR: ".trivycache/"
 #    FULL_IMAGE_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  before_script:
+  - df -h
+  - mkdir -p .trivycache/
   script:
     - trivy --version
     - echo trivy --version
