@@ -48,8 +48,8 @@ trivy_scan:
     when:                          always
     reports:
       container_scanning:          gl-container-scanning-report.json
-  tags:
-    - docker-runner
+#  tags:
+#    - docker-runner
   when: manual
 
 deploy-prod:
