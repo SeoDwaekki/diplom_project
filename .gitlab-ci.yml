@@ -23,14 +23,14 @@ trivy_scan:
     # No need to clone the repo, we exclusively work on artifacts.  See
     # https://docs.gitlab.com/ee/ci/runners/README.html#git-strategy
     GIT_STRATEGY: none
-    TRIVY_USERNAME: "$CI_REGISTRY_USER"
-    TRIVY_PASSWORD: "$CI_REGISTRY_PASSWORD"
-    TRIVY_AUTH_URL: "$CI_REGISTRY"
+#    TRIVY_USERNAME: "$CI_REGISTRY_USER"
+#    TRIVY_PASSWORD: "$CI_REGISTRY_PASSWORD"
+#    TRIVY_AUTH_URL: "$CI_REGISTRY"
     TRIVY_NO_PROGRESS: "true"
     TRIVY_CACHE_DIR: ".trivycache/"
 #    FULL_IMAGE_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
   script:
-    - trivy --version
+    - echo trivy --version
     # cache cleanup is needed when scanning images with the same tags, it does not remove the database
     - time trivy clean --scan-cache
     # update vulnerabilities db
