@@ -12,7 +12,7 @@ build-job:
     - docker info
     - docker build --pull -t "$CI_REGISTRY_IMAGE" . 
     - docker push "$CI_REGISTRY_IMAGE"
-  when: manual
+#  when: manual
 
 
 trivy_scan:
@@ -45,7 +45,7 @@ trivy_scan:
     when:                          always
     reports:
       container_scanning:          gl-container-scanning-report.json
-  when: manual
+#  when: manual
 
 deploy-prod:
   stage: deploy
@@ -62,4 +62,4 @@ deploy-prod:
     - kubectl apply -f k8s/
     - kubectl rollout restart deployment/${DEPLOYMENT_NAME} --namespace=${NAMESPACE}
   environment: production
-  when: manual
+#  when: manual
