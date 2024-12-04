@@ -52,10 +52,10 @@ deploy-prod:
   image:
     name: bitnami/kubectl:latest
     entrypoint: [""]
-  script:
   variables:
     NAMESPACE: "diplom"
     DEPLOYMENT_NAME: "diplom-app"
+  script:
     - echo "Deploying to Kubernetes..."
     - echo $KUBECONFIG
     - export KUBECONFIG=$KUBECONFIG
