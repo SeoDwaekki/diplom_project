@@ -1,21 +1,30 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-deployment
+  name: diplom-app
+  namespace: diplom
   labels:
-    app: nginx
+    app: web-app
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
-      app: nginx
+      app: web-app
   template:
     metadata:
       labels:
-        app: nginx
+        app: web-app
     spec:
       containers:
-      - name: nginx
-        image: nginx:1.14.2
+      - name: diplom-test-site
+        image: seodwaekki/html-image
+        resources:
+          requests:
+            cpu: "1"
+            memory: "200Mi"
+          limits:
+            cpu: "2"
+            memory: "400Mi"
         ports:
         - containerPort: 80
+
