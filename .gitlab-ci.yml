@@ -31,7 +31,7 @@ trivy_scan:
     TRIVY_CACHE_DIR: ".trivycache/"
 #    FULL_IMAGE_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
   before_script:
-    - apt-get update && apt-get install -y jq  # Устанавливаем jq
+    - apk update && apk add jq  # Устанавливаем jq
 #    - jq --version  # Проверяем, что jq установлен
   script:
     - trivy --version
@@ -59,7 +59,7 @@ trivy_scan:
     when:                          always
     reports:
       container_scanning:          gl-container-scanning-report.json
-  when: manual
+#  when: manual
 
 deploy-prod:
   stage: deploy
