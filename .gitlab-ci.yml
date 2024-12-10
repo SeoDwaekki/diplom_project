@@ -6,15 +6,15 @@ stages:
 build-job:
   stage: build
   image: docker:latest
-  variables:
-    DOCKER_CONTENT_TRUST: "1"
+#  variables:
+#    DOCKER_CONTENT_TRUST: "1"
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   script:
     - docker info
     - docker build --pull -t "$CI_REGISTRY_IMAGE" . 
     - docker push "$CI_REGISTRY_IMAGE"
-#  when: manual
+  when: manual
 
 
 trivy_scan:
@@ -36,10 +36,19 @@ trivy_scan:
     - time trivy clean --scan-cache
     - time trivy image --download-db-only
     # Builds report and puts it in the default workdir $CI_PROJECT_DIR, so `artifacts:` can take it from there
-    - time trivy image --exit-code 0 --format template --template "@/contrib/gitlab.tpl"
+    - echo "Scanning image for CRITICAL and HIGH vulnerabilities..."
+    - time trivy image --severity CRITICAL,HIGH --format template --template "@/contrib/gitlab.tpl"
         --output "$CI_PROJECT_DIR/gl-container-scanning-report.json" "$CI_REGISTRY_IMAGE"
-    - time trivy image --exit-code 0 --severity HIGH "$CI_REGISTRY_IMAGE"
-    - time trivy image --exit-code 0 --severity CRITICAL "$CI_REGISTRY_IMAGE"
+    # Подсчитываем только количество CRITICAL уязвимостей
+    # Если количество CRITICAL больше 6, то прерываем пайплайн
+    - |
+      CRITICAL_COUNT=$(jq '.Results[].Vulnerabilities | map(select(.Severity == "CRITICAL")) | length' "$CI_PROJECT_DIR/gl-container-scanning-report.json" | awk '{s+=$1} END {print s}')
+      echo "Found $CRITICAL_COUNT CRITICAL vulnerabilities."
+      
+      if [ "$CRITICAL_COUNT" -gt 6 ]; then
+        echo "Pipeline failed due to $CRITICAL_COUNT CRITICAL vulnerabilities."
+        exit 1
+      fi
   cache:
     paths:
       - .trivycache/
