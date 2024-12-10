@@ -43,12 +43,12 @@ trivy_scan:
     - time trivy image --severity CRITICAL,HIGH --format json
         --output "$CI_PROJECT_DIR/gl-container-scanning-report.json" "$CI_REGISTRY_IMAGE"
     # Подсчитываем только количество CRITICAL уязвимостей
-    # Если количество CRITICAL больше 6, то прерываем пайплайн
+    # Если количество CRITICAL больше 4, то прерываем пайплайн
     - |
       CRITICAL_COUNT=$(jq '.Results[].Vulnerabilities | map(select(.Severity == "CRITICAL")) | length' "$CI_PROJECT_DIR/gl-container-scanning-report.json" | awk '{s+=$1} END {print s}')
       echo "Found $CRITICAL_COUNT CRITICAL vulnerabilities."
       
-      if [ "$CRITICAL_COUNT" -gt 6 ]; then
+      if [ "$CRITICAL_COUNT" -gt 4 ]; then
         echo "Pipeline failed due to $CRITICAL_COUNT CRITICAL vulnerabilities."
         exit 1
       fi
