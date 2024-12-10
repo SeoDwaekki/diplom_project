@@ -30,6 +30,8 @@ trivy_scan:
     TRIVY_NO_PROGRESS: "true"
     TRIVY_CACHE_DIR: ".trivycache/"
 #    FULL_IMAGE_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
+  before_script:
+    - apt-get update && apt-get install -y jq  # Устанавливаем jq
   script:
     - trivy --version
     # cache cleanup is needed when scanning images with the same tags, it does not remove the database
