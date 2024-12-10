@@ -40,7 +40,7 @@ trivy_scan:
     - time trivy image --download-db-only
     # Builds report and puts it in the default workdir $CI_PROJECT_DIR, so `artifacts:` can take it from there
     - echo "Scanning image for CRITICAL and HIGH vulnerabilities..."
-    - time trivy image --severity CRITICAL,HIGH --format template --template "@/contrib/gitlab.tpl"
+    - time trivy image --severity CRITICAL,HIGH --format json
         --output "$CI_PROJECT_DIR/gl-container-scanning-report.json" "$CI_REGISTRY_IMAGE"
     # Подсчитываем только количество CRITICAL уязвимостей
     # Если количество CRITICAL больше 6, то прерываем пайплайн
