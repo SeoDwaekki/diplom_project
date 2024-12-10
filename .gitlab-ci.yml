@@ -59,7 +59,7 @@ deploy-prod:
     - echo "Deploying to Kubernetes..."
     - echo $KUBECONFIG
     - export KUBECONFIG=$KUBECONFIG
-    - kubectl apply -f k8s/
+    - kubectl apply -f k8s/deployment.yaml
     - kubectl rollout restart deployment/${DEPLOYMENT_NAME} --namespace=${NAMESPACE}
   environment: production
 #  when: manual
