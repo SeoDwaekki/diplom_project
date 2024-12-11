@@ -59,7 +59,7 @@ trivy_scan:
     when:                          always
     reports:
       container_scanning:          gl-container-scanning-report.json
-  when: manual
+#  when: manual
 
 deploy-prod:
   stage: deploy
