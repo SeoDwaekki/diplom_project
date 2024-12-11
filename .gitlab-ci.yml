@@ -42,7 +42,8 @@ trivy_scan:
     - time trivy image --severity CRITICAL,HIGH --format json
         --output "$CI_PROJECT_DIR/gl-container-scanning-report.json" "$CI_REGISTRY_IMAGE"
     - time trivy image --severity CRITICAL "$CI_REGISTRY_IMAGE"
-    - time trivy fs $CI_PROJECT_DIR/k8s --severity HIGH,CRITICAL --scanners misconfig --format table --exit-code 0
+    - time trivy fs --severity HIGH,CRITICAL --scanners misconfig --format table --exit-code 0
+    # $CI_PROJECT_DIR/k8s
     # Подсчитываем только количество CRITICAL уязвимостей
     # Если количество CRITICAL больше 4, то прерываем пайплайн
     - |
