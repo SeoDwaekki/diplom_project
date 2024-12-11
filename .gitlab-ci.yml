@@ -41,6 +41,7 @@ trivy_scan:
     - echo "Scanning image for CRITICAL and HIGH vulnerabilities..."
     - time trivy image --severity CRITICAL,HIGH --format json
         --output "$CI_PROJECT_DIR/gl-container-scanning-report.json" "$CI_REGISTRY_IMAGE"
+    - time trivy image --severity CRITICAL "$CI_REGISTRY_IMAGE"
     # Подсчитываем только количество CRITICAL уязвимостей
     # Если количество CRITICAL больше 4, то прерываем пайплайн
     - |
