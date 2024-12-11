@@ -9,7 +9,7 @@ build-job:
 #  variables:
 #    DOCKER_CONTENT_TRUST: "1"
   before_script:
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
   script:
     - docker info
     - docker build --pull -t "$CI_REGISTRY_IMAGE" . 
@@ -32,7 +32,6 @@ trivy_scan:
 #    FULL_IMAGE_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
   before_script:
     - apk update && apk add jq  # Устанавливаем jq
-#    - jq --version  # Проверяем, что jq установлен
   script:
     - trivy --version
     # cache cleanup is needed when scanning images with the same tags, it does not remove the database
@@ -59,7 +58,7 @@ trivy_scan:
     when:                          always
     reports:
       container_scanning:          gl-container-scanning-report.json
-#  when: manual
+  when: manual
 
 deploy-prod:
   stage: deploy
@@ -76,4 +75,4 @@ deploy-prod:
     - kubectl apply -f k8s/
     - kubectl rollout restart deployment/${DEPLOYMENT_NAME} --namespace=${NAMESPACE}
   environment: production
-#  when: manual
+  when: manual
