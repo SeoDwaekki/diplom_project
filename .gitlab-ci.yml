@@ -15,7 +15,7 @@ build-job:
     - docker build --pull -t "$CI_REGISTRY_IMAGE" . 
     - docker push "$CI_REGISTRY_IMAGE"
   only:
-    chnges:
+    changes:
       - Dockerfile
   
 
