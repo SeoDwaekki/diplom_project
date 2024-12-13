@@ -14,7 +14,10 @@ build-job:
     - docker info
     - docker build --pull -t "$CI_REGISTRY_IMAGE" . 
     - docker push "$CI_REGISTRY_IMAGE"
-  when: manual
+  only:
+    chnges:
+      - Dockerfile
+  
 
 
 trivy_scan:
