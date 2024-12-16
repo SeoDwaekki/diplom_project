@@ -7,7 +7,7 @@ stages:
 check-docker:
   stage: check
   script:
-    - echo "DOCKER_HOST: $DOCKER_HOST"
+    - echo $DOCKER_HOST
     - docker info
     - ps aux | grep dockerd
 
@@ -17,7 +17,7 @@ build-job:
 #  variables:
 #    DOCKER_CONTENT_TRUST: "1"
   before_script:
-  - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
   script:
     - docker info
     - docker build --pull -t "$CI_REGISTRY_IMAGE" . 
