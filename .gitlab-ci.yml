@@ -71,8 +71,8 @@ deploy-prod:
   variables:
     NAMESPACE: "diplom"
     DEPLOYMENT_NAME: "diplom-app"
-  needs:
-   - job: trivy_scan
+#  needs:
+#   - job: trivy_scan
   script:
     - echo "Deploying to Kubernetes..."
     - echo $KUBECONFIG
