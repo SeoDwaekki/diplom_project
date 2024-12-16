@@ -82,5 +82,5 @@ deploy-prod:
   rules:
     - if:  $CI_PIPELINE_STATUS == 'success'
 # $CI_COMMIT_BRANCH == 'main' &&
-# environment: production
+  environment: production
   when: manual
