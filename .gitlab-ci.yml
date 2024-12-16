@@ -79,8 +79,8 @@ deploy-prod:
     - export KUBECONFIG=$KUBECONFIG
     - kubectl apply -f k8s/
     - kubectl rollout restart deployment/${DEPLOYMENT_NAME} --namespace=${NAMESPACE}
-  rules:
-    - if:  $CI_PIPELINE_STATUS == 'success'
+#  rules:
+#    - if:  $CI_PIPELINE_STATUS == 'success'
 # $CI_COMMIT_BRANCH == 'main' &&
   environment: production
   when: manual
