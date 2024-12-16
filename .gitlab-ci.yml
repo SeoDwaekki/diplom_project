@@ -47,7 +47,8 @@ trivy_scan:
     # Подсчитываем только количество CRITICAL уязвимостей
     # Если количество CRITICAL больше 4, то прерываем пайплайн
     - |
-      CRITICAL_COUNT=$(jq '.Results[].Vulnerabilities | map(select(.Severity == "CRITICAL")) | length' "$CI_PROJECT_DIR/gl-container-scanning-report.json" | awk '{s+=$1} END {print s}')
+      CRITICAL_COUNT=$(jq '.Results[].Vulnerabilities | map(select(.Severity == "CRITICAL")) | length' \
+      "$CI_PROJECT_DIR/gl-container-scanning-report.json" | awk '{s+=$1} END {print s}')
       echo "Found $CRITICAL_COUNT CRITICAL vulnerabilities."
       
       if [ "$CRITICAL_COUNT" -gt 4 ]; then
