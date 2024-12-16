@@ -71,11 +71,14 @@ deploy-prod:
   variables:
     NAMESPACE: "diplom"
     DEPLOYMENT_NAME: "diplom-app"
+  needs:
+   - job: trivy_scan
   script:
     - echo "Deploying to Kubernetes..."
     - echo $KUBECONFIG
     - export KUBECONFIG=$KUBECONFIG
     - kubectl apply -f k8s/
     - kubectl rollout restart deployment/${DEPLOYMENT_NAME} --namespace=${NAMESPACE}
-  environment: production
+  rules:
+    - if: $CI_COMMIT_BRANCH == 'main' && $CI_PIPELINE_STATUS == 'success'
   when: manual
