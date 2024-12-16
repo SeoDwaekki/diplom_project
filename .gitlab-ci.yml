@@ -1,15 +1,8 @@
 stages:
-  - check
   - build
   - scan
   - deploy
 
-check-docker:
-  stage: check
-  script:
-    - echo $DOCKER_HOST
-    - docker info
-    - ps aux | grep dockerd
 
 build-job:
   stage: build
@@ -19,13 +12,14 @@ build-job:
   before_script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
   script:
+    - echo $DOCKER_HOST
     - docker info
     - docker build --pull -t "$CI_REGISTRY_IMAGE" . 
     - docker push "$CI_REGISTRY_IMAGE" 
 #  when: manual
-  only:
-    changes:
-      - Dockerfile
+#  only:
+#    changes:
+#      - Dockerfile
 
 trivy_scan:
   stage: scan
