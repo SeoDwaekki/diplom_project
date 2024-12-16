@@ -1,7 +1,15 @@
 stages:
+  - check
   - build
   - scan
   - deploy
+
+check-docker:
+  stage: check
+  script:
+    - echo "DOCKER_HOST: $DOCKER_HOST"
+    - docker info
+    - ps aux | grep dockerd
 
 build-job:
   stage: build
@@ -62,7 +70,7 @@ trivy_scan:
     when:                          always
     reports:
       container_scanning:          gl-container-scanning-report.json
-#  when: manual
+  when: manual
 
 deploy-prod:
   stage: deploy
