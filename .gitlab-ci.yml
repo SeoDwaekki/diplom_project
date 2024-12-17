@@ -11,7 +11,7 @@ build-job:
 #    DOCKER_CONTENT_TRUST: "1"
   before_script:
     # Проверка доступности порта 5000
-    - nc -zv localhost 5000
+    - nc -zv 192.168.1.83 5000
     # Проверка доступности Docker Registry
     - curl -v http://$CI_REGISTRY_NEXUS/v2/_catalog
     - echo $CI_REGISTRY_NEXUS_USER
