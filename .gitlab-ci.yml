@@ -10,6 +10,12 @@ build-job:
 #  variables:
 #    DOCKER_CONTENT_TRUST: "1"
   before_script:
+    # Проверка доступности по пингу
+    - ping -c 4 $CI_REGISTRY_NEXUS
+    # Проверка доступности порта 5000
+    - nc -zv $CI_REGISTRY_NEXUS 5000
+    # Проверка доступности Docker Registry
+    - curl -v http://$CI_REGISTRY_NEXUS:5000/v2/_catalog
     - echo $CI_REGISTRY_NEXUS_USER
     - echo $CI_REGISTRY_NEXUS
     - docker login -u "$CI_REGISTRY_NEXUS_USER" -p "$CI_REGISTRY_NEXUS_PASSWORD" $CI_REGISTRY_NEXUS
