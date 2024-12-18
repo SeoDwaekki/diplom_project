@@ -13,7 +13,7 @@ build-job:
     - echo $CI_REGISTRY_NEXUS_USER
     - echo $CI_REGISTRY_NEXUS
     - mkdir -p ~/.docker
-    - echo "$DOCKER_CONFIG_JSON" | jq '.' > ~/.docker/config.json
+    - echo "$DOCKER_CONFIG_JSON" > ~/.docker/config.json
     - cat ~/.docker/config.json
   script:
     - echo $DOCKER_HOST
