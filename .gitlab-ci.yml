@@ -15,6 +15,7 @@ build-job:
     - mkdir -p ~/.docker
     - echo "$DOCKER_CONFIG_JSON" > ~/.docker/config.json
     - cat ~/.docker/config.json
+    - echo -n "admin:seodwaekki" | base64
   script:
     - echo $DOCKER_HOST
     - docker info
