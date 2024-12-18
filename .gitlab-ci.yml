@@ -8,7 +8,7 @@ build-job:
   stage: build
   image: docker:latest
   variables:
-    TAG: v2
+    TAG: test
 #    DOCKER_CONTENT_TRUST: "1"
   before_script:
     - mkdir -p ~/.docker
@@ -29,7 +29,7 @@ trivy_scan:
     entrypoint: [""]
   variables:
     GIT_STRATEGY: none
-    TAG: v2
+    TAG: test
 #    TRIVY_USERNAME: "$CI_REGISTRY_USER"
 #    TRIVY_PASSWORD: "$CI_REGISTRY_PASSWORD"
 #    TRIVY_AUTH_URL: "$CI_REGISTRY"
