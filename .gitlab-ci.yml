@@ -10,14 +10,9 @@ build-job:
 #  variables:
 #    DOCKER_CONTENT_TRUST: "1"
   before_script:
-    - echo $CI_REGISTRY_NEXUS_USER
-    - echo $CI_REGISTRY_NEXUS
     - mkdir -p ~/.docker
     - echo "$DOCKER_CONFIG_JSON" > ~/.docker/config.json
-    - cat ~/.docker/config.json
-    - echo -n "admin:seodwaekki" | base64
   script:
-    - echo $DOCKER_HOST
     - docker info
     - docker build --pull -t $CI_REGISTRY_NEXUS/html-image:latest . 
     - docker push $CI_REGISTRY_NEXUS/html-image:latest
