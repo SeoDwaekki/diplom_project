@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: diplom-test-site
-        image: seodwaekki/html-image
+        image: localhost:5000/html-image:latest
         resources:
           requests:
             cpu: "0.5"
