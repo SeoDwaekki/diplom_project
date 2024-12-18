@@ -8,15 +8,15 @@ build-job:
   stage: build
   image: docker:latest
   variables:
-     TAG: v1
+    TAG: v1
 #    DOCKER_CONTENT_TRUST: "1"
   before_script:
     - mkdir -p ~/.docker
     - echo "$DOCKER_CONFIG_JSON" > ~/.docker/config.json
   script:
     - docker info
-    - docker build --pull -t $CI_REGISTRY_NEXUS/html-image:$TAG . 
-    - docker push $CI_REGISTRY_NEXUS/html-image:$TAG
+    - docker build --pull -t $CI_REGISTRY_NEXUS_IMAGE:$TAG . 
+    - docker push $CI_REGISTRY_NEXUS_IMAGE:$TAG
 #  when: manual
   only:
     changes:
@@ -29,6 +29,7 @@ trivy_scan:
     entrypoint: [""]
   variables:
     GIT_STRATEGY: none
+    TAG: v1
 #    TRIVY_USERNAME: "$CI_REGISTRY_USER"
 #    TRIVY_PASSWORD: "$CI_REGISTRY_PASSWORD"
 #    TRIVY_AUTH_URL: "$CI_REGISTRY"
@@ -45,8 +46,8 @@ trivy_scan:
     # Builds report and puts it in the default workdir $CI_PROJECT_DIR, so `artifacts:` can take it from there
     - echo "Scanning image for CRITICAL and HIGH vulnerabilities..."
     - time trivy image --severity CRITICAL,HIGH --format json
-        --output "$CI_PROJECT_DIR/gl-container-scanning-report.json" "$CI_REGISTRY_NEXUS_IMAGE"
-    - time trivy image --severity CRITICAL "$CI_REGISTRY_NEXUS_IMAGE"
+        --output "$CI_PROJECT_DIR/gl-container-scanning-report.json" "$CI_REGISTRY_NEXUS_IMAGE:$TAG"
+    - time trivy image --severity CRITICAL "$CI_REGISTRY_NEXUS_IMAGE:$TAG"
     # Подсчитываем только количество CRITICAL уязвимостей
     # Если количество CRITICAL больше 4, то прерываем пайплайн
     - |
