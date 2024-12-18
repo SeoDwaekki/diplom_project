@@ -12,7 +12,7 @@ build-job:
   before_script:
     - echo $CI_REGISTRY_NEXUS_USER
     - echo $CI_REGISTRY_NEXUS
-    - docker login -u admin -p seodwaekki http://localhost:5000
+    - echo "$CI_REGISTRY_NEXUS_PASSWORD" | docker login -u "$CI_REGISTRY_NEXUS_USER" --password-stdin $CI_REGISTRY_NEXUS
   script:
     - echo $DOCKER_HOST
     - docker info
