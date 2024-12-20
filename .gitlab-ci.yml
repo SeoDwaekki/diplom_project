@@ -8,7 +8,7 @@ build-job:
   stage: build
   image: docker:latest
   variables:
-    TAG: test
+    TAG: v1
 #    DOCKER_CONTENT_TRUST: "1"
   before_script:
     - mkdir -p ~/.docker
@@ -29,7 +29,7 @@ trivy_scan:
     entrypoint: [""]
   variables:
     GIT_STRATEGY: none
-    TAG: test
+    TAG: v1
 #    TRIVY_USERNAME: "$CI_REGISTRY_USER"
 #    TRIVY_PASSWORD: "$CI_REGISTRY_PASSWORD"
 #    TRIVY_AUTH_URL: "$CI_REGISTRY"
@@ -55,7 +55,7 @@ trivy_scan:
       "$CI_PROJECT_DIR/gl-container-scanning-report.json" | awk '{s+=$1} END {print s}')
       echo "Found $CRITICAL_COUNT CRITICAL vulnerabilities."
       
-      if [ "$CRITICAL_COUNT" -gt 4 ]; then
+      if [ "$CRITICAL_COUNT" -gt 1 ]; then
         echo "Pipeline failed due to $CRITICAL_COUNT CRITICAL vulnerabilities."
         exit 1
       fi
