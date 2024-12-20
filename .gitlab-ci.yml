@@ -12,7 +12,7 @@ build-job:
 #    DOCKER_CONTENT_TRUST: "1"
   before_script:
     - mkdir -p ~/.docker
-    - echo "$DOCKER_CONFIG_JSON" > ~/.docker/config.json
+    - echo "$NEXUS_CONFIG_JSON" > ~/.docker/config.json
   script:
     - docker info
     - docker build --pull -t $CI_REGISTRY_NEXUS_IMAGE:$TAG . 
