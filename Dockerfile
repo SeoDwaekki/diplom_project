@@ -4,8 +4,8 @@ WORKDIR /tmp
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         build-essential \
-        wget
-RUN wget https://zlib.net/zlib-1.3.1.tar.gz && \
+        wget 
+RUN wget https://github.com/madler/zlib/archive/refs/tags/v1.3.1.tar.gz -O zlib-1.3.1.tar.gz && \
     tar -xzf zlib-1.3.1.tar.gz && \
     cd zlib-1.3.1 && \
     ./configure && \
