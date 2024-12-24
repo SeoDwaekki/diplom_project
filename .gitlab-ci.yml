@@ -3,12 +3,11 @@ stages:
   - scan
   - deploy
 
-
 build-job:
   stage: build
   image: docker:latest
   variables:
-    TAG: v2
+    TAG: test
   before_script:
     - mkdir -p ~/.docker
     - echo "$NEXUS_CONFIG_JSON" > ~/.docker/config.json
@@ -16,7 +15,6 @@ build-job:
     - docker info
     - docker build --pull -t $CI_REGISTRY_NEXUS_IMAGE:$TAG . 
     - docker push $CI_REGISTRY_NEXUS_IMAGE:$TAG
-#  when: manual
   only:
     changes:
       - Dockerfile
@@ -28,19 +26,15 @@ trivy_scan:
     entrypoint: [""]
   variables:
     GIT_STRATEGY: none
-    TAG: v2
+    TAG: test
 #    TRIVY_USERNAME: "$CI_REGISTRY_USER"
 #    TRIVY_PASSWORD: "$CI_REGISTRY_PASSWORD"
 #    TRIVY_AUTH_URL: "$CI_REGISTRY"
     TRIVY_NO_PROGRESS: "true"
-#    TRIVY_CACHE_DIR: ".trivycache/"
-#    FULL_IMAGE_NAME: $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_SLUG
   before_script:
     - apk update && apk add jq  # Устанавливаем jq
   script:
     - trivy --version
-    # cache cleanup is needed when scanning images with the same tags, it does not remove the database
-#    - time trivy clean --scan-cache
     - time trivy image --download-db-only
     # Builds report and puts it in the default workdir $CI_PROJECT_DIR, so `artifacts:` can take it from there
     - echo "Scanning image for CRITICAL and HIGH vulnerabilities..."
@@ -48,7 +42,7 @@ trivy_scan:
         --output "$CI_PROJECT_DIR/gl-container-scanning-report.json" "$CI_REGISTRY_NEXUS_IMAGE:$TAG"
     - time trivy image --severity CRITICAL "$CI_REGISTRY_NEXUS_IMAGE:$TAG"
     # Подсчитываем только количество CRITICAL уязвимостей
-    # Если количество CRITICAL больше 4, то прерываем пайплайн
+    # Если количество CRITICAL 1 или больше, то прерываем пайплайн
     - |
       CRITICAL_COUNT=$(jq '.Results[].Vulnerabilities | map(select(.Severity == "CRITICAL")) | length' \
       "$CI_PROJECT_DIR/gl-container-scanning-report.json" | awk '{s+=$1} END {print s}')
@@ -58,14 +52,10 @@ trivy_scan:
         echo "Pipeline failed due to $CRITICAL_COUNT CRITICAL vulnerabilities."
         exit 1
       fi
-#  cache:
-#    paths:
-#      - .trivycache/
   artifacts:
     when:                          always
     reports:
       container_scanning:          gl-container-scanning-report.json
-#  when: manual
 
 deploy-prod:
   stage: deploy
