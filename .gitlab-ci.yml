@@ -38,6 +38,7 @@ trivy_scan:
     - time trivy image --severity CRITICAL,HIGH --format json
         --output "$CI_PROJECT_DIR/gl-container-scanning-report.json" "$CI_REGISTRY_NEXUS_IMAGE:$TAG"
     - time trivy image --severity CRITICAL "$CI_REGISTRY_NEXUS_IMAGE:$TAG"
+    - echo "Vulnerabilities CVE-2023-6879 and CVE-2023-45853 are marked as not_affected"
     - echo "Marking specific vulnerabilities as not_affected..."
     - |
       jq --argjson vulns '["CVE-2023-6879", "CVE-2023-45853"]' '
@@ -48,12 +49,14 @@ trivy_scan:
             .
           end
         )
-      ' "$CI_PROJECT_DIR/gl-container-scanning-report.json" > "$CI_PROJECT_DIR/gl-container-scanning-report-updated.json"
+      ' "$CI_PROJECT_DIR/gl-container-scanning-report.json" > \
+      "$CI_PROJECT_DIR/gl-container-scanning-report-updated.json"
     # Подсчитываем только количество CRITICAL уязвимостей
     # Если количество CRITICAL 1 или больше, то прерываем пайплайн
     - echo "Counting critical vulnerabilities excluding not_affected..."
     - |
-      CRITICAL_COUNT=$(jq '.Results[].Vulnerabilities | map(select(.Severity == "CRITICAL" and .not_affected != true)) | length' \
+      CRITICAL_COUNT=$(jq '.Results[].Vulnerabilities | \ 
+      map(select(.Severity == "CRITICAL" and .not_affected != true)) | length' \
       "$CI_PROJECT_DIR/gl-container-scanning-report-updated.json" | awk '{s+=$1} END {print s}')
       echo "Found $CRITICAL_COUNT CRITICAL vulnerabilities."
 
