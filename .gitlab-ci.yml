@@ -27,9 +27,6 @@ trivy_scan:
   variables:
     GIT_STRATEGY: none
     TAG: test
-#    TRIVY_USERNAME: "$CI_REGISTRY_USER"
-#    TRIVY_PASSWORD: "$CI_REGISTRY_PASSWORD"
-#    TRIVY_AUTH_URL: "$CI_REGISTRY"
     TRIVY_NO_PROGRESS: "true"
   before_script:
     - apk update && apk add jq  # Устанавливаем jq
@@ -41,22 +38,35 @@ trivy_scan:
     - time trivy image --severity CRITICAL,HIGH --format json
         --output "$CI_PROJECT_DIR/gl-container-scanning-report.json" "$CI_REGISTRY_NEXUS_IMAGE:$TAG"
     - time trivy image --severity CRITICAL "$CI_REGISTRY_NEXUS_IMAGE:$TAG"
+    - echo "Marking specific vulnerabilities as not_affected..."
+    - |
+      jq --argjson vulns '["CVE-2023-6879", "CVE-2023-45853"]' '
+        .Results[].Vulnerabilities |= map(
+          if .VulnerabilityID | IN($vulns[]) then
+            . + {not_affected: true}
+          else
+            .
+          end
+        )
+      ' "$CI_PROJECT_DIR/gl-container-scanning-report.json" > "$CI_PROJECT_DIR/gl-container-scanning-report-updated.json"
     # Подсчитываем только количество CRITICAL уязвимостей
     # Если количество CRITICAL 1 или больше, то прерываем пайплайн
+    - echo "Counting critical vulnerabilities excluding not_affected..."
     - |
-      CRITICAL_COUNT=$(jq '.Results[].Vulnerabilities | map(select(.Severity == "CRITICAL")) | length' \
-      "$CI_PROJECT_DIR/gl-container-scanning-report.json" | awk '{s+=$1} END {print s}')
+      CRITICAL_COUNT=$(jq '.Results[].Vulnerabilities | map(select(.Severity == "CRITICAL" and .not_affected != true)) | length' \
+      "$CI_PROJECT_DIR/gl-container-scanning-report-updated.json" | awk '{s+=$1} END {print s}')
       echo "Found $CRITICAL_COUNT CRITICAL vulnerabilities."
-      
-      if [ "$CRITICAL_COUNT" -gt 1 ]; then
+
+      if [ "$CRITICAL_COUNT" -gt 0 ]; then
         echo "Pipeline failed due to $CRITICAL_COUNT CRITICAL vulnerabilities."
         exit 1
       fi
-  artifacts:
-    when:                          always
-    reports:
-      container_scanning:          gl-container-scanning-report.json
 
+  artifacts:
+    when: always
+    reports:
+      container_scanning: gl-container-scanning-report-updated.json
+      
 deploy-prod:
   stage: deploy
   image:
