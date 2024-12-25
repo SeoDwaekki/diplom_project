@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: diplom-test-site
-        image: 192.168.1.83:5000/html-image:test
+        image: 192.168.1.83:5000/html-image:v3
         resources:
           requests:
             cpu: "0.5"
