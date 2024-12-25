@@ -29,7 +29,7 @@ trivy_scan:
     TAG: v3
     TRIVY_NO_PROGRESS: "true"
   before_script:
-    - apk update && apk add jq  # Устанавливаем jq
+    - apk update && apk add jq  
   script:
     - trivy --version
     - time trivy image --download-db-only
