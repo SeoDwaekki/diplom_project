@@ -68,6 +68,7 @@ trivy_scan:
     when: always
     reports:
       container_scanning: gl-container-scanning-report-updated.json
+  when: manual
       
 deploy-prod:
   stage: deploy
