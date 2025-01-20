@@ -19,7 +19,7 @@ build-job:
     changes:
       - Dockerfile
 
-.trivy_scan:
+trivy_scan:
   stage: scan
   image:
     name: docker.io/aquasec/trivy:latest
