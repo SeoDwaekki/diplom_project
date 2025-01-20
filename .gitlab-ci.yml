@@ -7,7 +7,7 @@ build-job:
   stage: build
   image: docker:latest
   variables:
-    TAG: v2
+    TAG: v3
   before_script:
     - mkdir -p ~/.docker
     - echo "$NEXUS_CONFIG_JSON" > ~/.docker/config.json
@@ -26,7 +26,7 @@ trivy_scan:
     entrypoint: [""]
   variables:
     GIT_STRATEGY: none
-    TAG: v2
+    TAG: v3
     TRIVY_NO_PROGRESS: "true"
   before_script:
     - apk update && apk add jq  
