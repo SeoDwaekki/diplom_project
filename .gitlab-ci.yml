@@ -7,7 +7,7 @@ build-job:
   stage: build
   image: docker:latest
   variables:
-    TAG: v3
+    TAG: v2
   before_script:
     - mkdir -p ~/.docker
     - echo "$NEXUS_CONFIG_JSON" > ~/.docker/config.json
@@ -26,7 +26,7 @@ build-job:
     entrypoint: [""]
   variables:
     GIT_STRATEGY: none
-    TAG: v3
+    TAG: v2
     TRIVY_NO_PROGRESS: "true"
   before_script:
     - apk update && apk add jq  
@@ -68,7 +68,6 @@ build-job:
     when: always
     reports:
       container_scanning: gl-container-scanning-report-updated.json
-  when: manual
 
 deploy-prod:
   stage: deploy
@@ -78,16 +77,13 @@ deploy-prod:
   variables:
     NAMESPACE: "diplom"
     DEPLOYMENT_NAME: "diplom-app"
-#  needs:
-#   - job: trivy_scan
+  needs:
+   - job: trivy_scan
   script:
     - echo "Deploying to Kubernetes..."
     - echo $KUBECONFIG
     - export KUBECONFIG=$KUBECONFIG
     - kubectl apply -f k8s/
     - kubectl rollout restart deployment/${DEPLOYMENT_NAME} --namespace=${NAMESPACE}
-#  rules:
-#    - if:  $CI_PIPELINE_STATUS == 'success'
-# $CI_COMMIT_BRANCH == 'main' &&
   environment: production
   when: manual
