@@ -37,7 +37,7 @@ trivy_scan:
     - echo "Scanning image for CRITICAL and HIGH vulnerabilities..."
     - time trivy image --severity CRITICAL,HIGH --format json
         --output "$CI_PROJECT_DIR/gl-container-scanning-report.json" "$CI_REGISTRY_NEXUS_IMAGE:$TAG"
-    - time trivy image --severity CRITICAL "$CI_REGISTRY_NEXUS_IMAGE:$TAG"
+#    - time trivy image --severity CRITICAL "$CI_REGISTRY_NEXUS_IMAGE:$TAG"
     - echo "Vulnerabilities CVE-2023-6879 and CVE-2023-45853 are marked as not_affected"
     - echo "Marking specific vulnerabilities as not_affected..."
     - |
